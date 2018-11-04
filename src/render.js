@@ -31,16 +31,24 @@ function VNodeToDom(vnode) {
     return document.createTextNode(String(vnode));
   }
   else if (typeof vnode.tag === 'function') {
-    const ctor = vnode.tag;
     const props = Object.assign(
       {}, 
       vnode.attrs, 
       { children: vnode.children }
     );
-    const component = new ctor(props);
-    const node = component.render();
-    dom = VNodeToDom(node);
-    component._dom = dom;    
+    const ctor = vnode.tag;
+
+    if (ctor.prototype instanceof Component) {
+      // Class style
+      const component = new ctor(props);
+      const node = component.render();
+      dom = VNodeToDom(node);
+      component._dom = dom;
+    } else {
+      // Function style
+      const node = ctor(props);
+      dom = VNodeToDom(node);
+    }
   }
   else {
     dom = document.createElement(vnode.tag);
