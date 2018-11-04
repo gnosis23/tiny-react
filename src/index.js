@@ -1,19 +1,26 @@
 import {render} from './render';
 import { h } from './vnode';
+import { Component } from './component';
 
 // ============================================================================
 //                     demo
 // ============================================================================
-const element = (
-  <div className="shopping-list">
-    <h1>Shopping List for {111}</h1>
-    <ul>
-      <li onClick={e => console.log(e.target)}>Instagram</li>
-      <li onClick={e => console.log(e.target)}>WhatsApp</li>
-      <li onClick={e => console.log(e.target)}>Oculus</li>
-    </ul>
-  </div>
-);
+class Clock extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+  }
 
+  render() {
+    return (
+      <div>
+        <h1>Hello, world!</h1>
+        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+
+const element = <Clock />
 console.log(element);
 render(element, document.getElementById('root'));

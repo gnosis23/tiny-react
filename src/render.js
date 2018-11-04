@@ -1,26 +1,46 @@
 import { setAttribute } from './attr';
+import { Component } from './component';
 
 /**
  * @param {VNode | string} vnode
- * @param {HTMLElement} node
+ * @param {HTMLElement|undefined} node
  */
 export function render(vnode, node) {
-  node.innerHTML = ``;
-  const dom = _render(vnode);
-  node.appendChild(dom);
+  const dom = VNodeToDom(vnode);
+
+  // insert new node
+  if (node) {
+    node.innerHTML = ``;
+    node.appendChild(dom);
+  }
 }
 
 /**
- * @param {VNode} vnode
+ * @param {VNode|Component} vnode
  */
-function _render(vnode) {
+function VNodeToDom(vnode) {
   let dom;
   
-  if (typeof vnode === 'string') {
-    dom = document.createTextNode(vnode);
+  if (vnode === null || vnode === undefined) {
+    return document.createTextNode('');
+  }
+  else if (typeof vnode === 'string') {
+    return document.createTextNode(vnode);
   } 
   else if (typeof vnode === 'number') {
-    dom = document.createTextNode(String(vnode));
+    return document.createTextNode(String(vnode));
+  }
+  else if (typeof vnode.tag === 'function') {
+    const ctor = vnode.tag;
+    const props = Object.assign(
+      {}, 
+      vnode.attrs, 
+      { children: vnode.children }
+    );
+    const component = new ctor(props);
+    const node = component.render();
+    dom = VNodeToDom(node);
+    component._dom = dom;    
   }
   else {
     dom = document.createElement(vnode.tag);
@@ -36,9 +56,20 @@ function _render(vnode) {
 
   if (vnode.children) {
     vnode.children.forEach(child => {
-      dom.appendChild(_render(child));
+      dom.appendChild(VNodeToDom(child));
     });
   }
 
   return dom;
+}
+
+/**
+ * @param {Component} component
+ */
+export function renderComponent(component) {
+  // triggered by setState
+  const newDom = VNodeToDom(component.render());
+  // replace current dom
+  component._dom.parentNode.replaceChild(newDom, component._dom);
+  component._dom = newDom;
 }
