@@ -3,8 +3,8 @@ export function setAttribute(dom, attrName, value) {
     dom.setAttribute('class', value);
   }
   else if (/on(\w+)/.test(attrName)) {
-    const key = attrName.match(/on(\w+)/)[1].toLowerCase();    
-    dom.addEventListener(key, value);
+    const key = attrName.toLowerCase();    
+    dom[key] = value || '';
   } 
   else {    
     dom.setAttribute(attrName, value);

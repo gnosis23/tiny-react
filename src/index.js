@@ -5,20 +5,28 @@ import { Component } from './component';
 // ============================================================================
 //                     demo
 // ============================================================================
-function Welcome(props) {
-  return <h1>Hello, {props.name}</h1>
+class Counter extends Component {
+  constructor( props ) {
+      super( props );
+      this.state = {
+          num: 1
+      }
+  }
+
+  onClick() {
+      this.setState( { num: this.state.num + 1 } );
+  }
+
+  render() {
+      return (
+          <div>
+              <h1>count: { this.state.num }</h1>
+              <button onClick={ () => this.onClick()}>add</button>
+          </div>
+      );
+  }
 }
 
-function App() {
-  return (
-    <div>
-      <Welcome name="Sara" />
-      <Welcome name="Cahal" />
-      <Welcome name="Edite" />
-    </div>
-  )
-}
-
-const element = <App />
+const element = <Counter />
 console.log(element);
 render(element, document.getElementById('root'));

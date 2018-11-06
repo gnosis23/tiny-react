@@ -1,18 +1,13 @@
 import { setAttribute } from './attr';
 import { Component } from './component';
+import { diff } from './diff';
 
 /**
  * @param {VNode | string} vnode
- * @param {HTMLElement|undefined} node
+ * @param {HTMLElement|undefined} container
  */
-export function render(vnode, node) {
-  const dom = VNodeToDom(vnode);
-
-  // insert new node
-  if (node) {
-    node.innerHTML = ``;
-    node.appendChild(dom);
-  }
+export function render(vnode, container, dom) {
+  return diff(dom, vnode, container);
 }
 
 /**
@@ -71,13 +66,3 @@ function VNodeToDom(vnode) {
   return dom;
 }
 
-/**
- * @param {Component} component
- */
-export function renderComponent(component) {
-  // triggered by setState
-  const newDom = VNodeToDom(component.render());
-  // replace current dom
-  component._dom.parentNode.replaceChild(newDom, component._dom);
-  component._dom = newDom;
-}
