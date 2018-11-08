@@ -1,6 +1,7 @@
 // https://github.com/hujiulong/simple-react/blob/chapter-3/src/react-dom/diff.js
 import { Component } from './component';
 import { setAttribute } from './attr';
+import { isFalsy } from './util';
 
 /**
  * @param {HTMLElement} dom 真实DOM
@@ -66,6 +67,11 @@ function diffNode(dom, vnode) {
         dom.parentNode.replaceChild(out, dom);
       }
     }
+  }
+
+  // remove falsy
+  if (vnode.children) {
+    vnode.children = vnode.children.filter(x => !isFalsy(x));
   }
 
   if (vnode.children && vnode.children.length > 0 || (out.childNodes && out.childNodes.length > 0)) {
@@ -261,22 +267,21 @@ function diffAttributes(dom, vnode) {
     old[attr.name] = attr.value;
   }
 
-  // 如果原来的属性不在新的属性当中，则将其移除掉（属性值设为undefined）
+  // 如果原来的属性不在新的属性当中或者值为falsy，则将其移除掉（属性值设为undefined）
   for (let name in old) {
-
     if (!(name in attrs)) {
       setAttribute(dom, name, undefined);
     }
-
   }
 
   // 更新新的属性值
   for (let name in attrs) {
-
-    if (old[name] !== attrs[name]) {
+    if (isFalsy(attrs[name])) {
+      setAttribute(dom, name, undefined);
+    }
+    else if (old[name] !== attrs[name]) {
       setAttribute(dom, name, attrs[name]);
     }
-
   }
 
 }

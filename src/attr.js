@@ -1,5 +1,8 @@
 export function setAttribute(dom, attrName, value) {
-  if (attrName === 'className') {    
+  if (value === undefined) {
+    dom.removeAttribute(attrName);
+  } 
+  else if (attrName === 'className') {    
     dom.setAttribute('class', value);
   }
   else if (/on(\w+)/.test(attrName)) {

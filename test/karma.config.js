@@ -38,12 +38,14 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      './test_index.js'
+      { pattern: './polyfills.js', watched: false },
+      { pattern: './test_index.js', watched: false },      
     ],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      './polyfills.js': ['webpack'],
       './test_index.js': ['webpack', 'sourcemap']
     },
 
