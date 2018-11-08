@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "parcel ./index.html"
+    "start": "parcel ./index.html",
+    "test": "karma start test/karma.config.js"
   },
   "repository": {
     "type": "git",
@@ -19,8 +20,19 @@
   "homepage": "https://github.com/gnosis23/tiny-react#readme",
   "devDependencies": {
     "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-env": "^1.6.1",
-    "parcel-bundler": "^1.7.1"
+    "parcel-bundler": "^1.7.1",
+    "jasmine": "^2.99.0",
+    "jasmine-core": "^2.99.0",
+    "karma": "^3.1.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.0.1",
+    "karma-ie-launcher": "^1.0.0",
+    "karma-jasmine": "^1.1.0",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^4.0.0-rc.2",
+    "webpack": "^4.22.0"
   }
 }
