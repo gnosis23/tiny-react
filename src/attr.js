@@ -1,4 +1,4 @@
-import { isFalsy } from "./util";
+import { IS_NON_DIMENSIONAL } from './constants';
 
 /**
  * Set a named attribute on the given Node, with special behavior for some names
@@ -30,24 +30,26 @@ export function setAccessor(node, name, old, value) {
 		}
 		if (value && typeof value==='object') {
 			if (typeof old!=='string') {
-				for (let i in old) if (!(i in value)) node.style[i] = '';
-			}
-			for (let i in value) {
-				node.style[i] = typeof value[i]==='number' && IS_NON_DIMENSIONAL.test(i)===false ? (value[i]+'px') : value[i];
-			}
+				for (const i in old) if (!(i in value)) node.style[i] = '';
+      }
+      /* eslint-disable guard-for-in */
+			for (const i in value) {
+        node.style[i] = typeof value[i]==='number' && IS_NON_DIMENSIONAL.test(i)===false ? (`${value[i]}px`) : value[i];
+      }
+      /* eslint-enable guard-for-in */
 		}
 	}
 	else if (name==='dangerouslySetInnerHTML') {
 		if (value) node.innerHTML = value.__html || '';
 	}
-	else if (name[0]=='o' && name[1]=='n') {
-		let useCapture = name !== (name=name.replace(/Capture$/, ''));
+	else if (name[0]==='o' && name[1]==='n') {
+		const useCapture = name !== (name=name.replace(/Capture$/, ''));
 		name = name.toLowerCase().substring(2);
 		if (value) {
-			if (!old) node.addEventListener(name, eventProxy, useCapture);
+			if (!old) node.addEventListener(name, value, useCapture);
 		}
 		else {
-			node.removeEventListener(name, eventProxy, useCapture);
+			node.removeEventListener(name, value, useCapture);
 		}
 		(node._listeners || (node._listeners = {}))[name] = value;
 	}
@@ -56,11 +58,12 @@ export function setAccessor(node, name, old, value) {
 		// IE & FF throw for certain property-value combinations.
 		try {
 			node[name] = (value == null) ? '' : value;
-		} catch (e) { }
-		if ((value==null || value===false) && name!='spellcheck') node.removeAttribute(name);
+		// eslint-disable-next-line no-empty
+		} catch (ignore) { }
+		if ((value==null || value===false) && name!=='spellcheck') node.removeAttribute(name);
 	}
 	else {
-		let ns = (name !== (name = name.replace(/^xlink:?/, '')));
+		const ns = (name !== (name = name.replace(/^xlink:?/, '')));
 		// spellcheck is treated differently than all other boolean values and
 		// should not be removed when the value is `false`. See:
 		// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-spellcheck

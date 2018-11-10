@@ -1,4 +1,5 @@
 import {render} from './render';
+// eslint-disable-next-line no-unused-vars
 import { h } from './vnode';
 import { Component } from './component';
 
@@ -9,7 +10,7 @@ class Counter extends Component {
   constructor( props ) {
       super( props );
       this.state = {
-          num: 1
+          num: 1,
       }
   }
 
@@ -19,10 +20,10 @@ class Counter extends Component {
 
   render() {
       return (
-          <div>
-              <h1>count: { this.state.num }</h1>
-              <button onClick={ () => this.onClick()}>add</button>
-          </div>
+        <div>
+          <h1>count: { this.state.num }</h1>
+          <button onClick={() => this.onClick()}>add</button>
+        </div>
       );
   }
 }

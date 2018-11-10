@@ -1,9 +1,11 @@
+/* eslint-disable react-in-jsx-scope */
 import { render } from '../../src/render';
+// eslint-disable-next-line
 import { h } from '../../src/vnode';
 
 function getAttributes(node) {
-	let attrs = {};
-	for (let i=node.attributes.length; i--; ) {
+	const attrs = {};
+	for (let i=node.attributes.length - 1; i >= 0; i -= 1) {
 		attrs[node.attributes[i].name] = node.attributes[i].value;
 	}
 	return attrs;
@@ -28,7 +30,7 @@ describe('render()', () => {
 
 	it('should render a empty text node given null', () => {
 		render(null, scratch);
-		let c = scratch.childNodes;
+		const c = scratch.childNodes;
 		expect(c.length).toEqual(1);
 		expect(c[0].data).toEqual('');
 		expect(c[0].nodeName).toEqual('#text');
@@ -36,7 +38,7 @@ describe('render()', () => {
 
 	it('should render an empty text node given an empty string', () => {
 		render('', scratch);
-		let c = scratch.childNodes;
+		const c = scratch.childNodes;
 		expect(c.length).toEqual(1);
 		expect(c[0].data).toEqual('');
 		expect(c[0].nodeName).toEqual('#text');
@@ -53,7 +55,7 @@ describe('render()', () => {
 		expect(scratch.childNodes.length).toEqual(1);
 		expect(scratch.childNodes[0].nodeName).toEqual('SPAN');
   });
-  
+
   it('should support custom tag names', () => {
 		render(<foo />, scratch);
 		expect(scratch.childNodes.length).toEqual(1);
@@ -65,7 +67,7 @@ describe('render()', () => {
 		expect(scratch.childNodes.length).toEqual(1);
 		expect(scratch.firstChild.nodeName).toEqual('X-BAR');
   });
-  
+
   it('should append new elements when called without a merge argument', () => {
 		render(<div />, scratch);
 		expect(scratch.childNodes.length).toEqual(1);
@@ -76,9 +78,9 @@ describe('render()', () => {
 		expect(scratch.childNodes[0].nodeName).toEqual('DIV');
 		expect(scratch.childNodes[1].nodeName).toEqual('SPAN');
   });
-  
+
   it('should merge new elements when called with a merge argument', () => {
-		let root = render(<div />, scratch);
+		const root = render(<div />, scratch);
 		expect(scratch.childNodes.length).toEqual(1);
 		expect(scratch.firstChild.nodeName).toEqual('DIV');
 
@@ -86,42 +88,44 @@ describe('render()', () => {
 		expect(scratch.childNodes.length).toEqual(1);
 		expect(scratch.firstChild.nodeName).toEqual('SPAN');
   });
-  
+
   it('should nest empty nodes', () => {
-		render((
-			<div>
-				<span />
-				<foo />
-				<x-bar />
-			</div>
-		), scratch);
+		render(
+      (
+        <div>
+          <span />
+          <foo />
+          <x-bar />
+        </div>
+		  ), scratch);
 
 		expect(scratch.childNodes.length).toEqual(1);
 		expect(scratch.childNodes[0].nodeName).toEqual('DIV');
 
-		let c = scratch.childNodes[0].childNodes;
+		const c = scratch.childNodes[0].childNodes;
 		expect(c.length).toEqual(3);
 		expect(c[0].nodeName).toEqual('SPAN');
 		expect(c[1].nodeName).toEqual('FOO');
 		expect(c[2].nodeName).toEqual('X-BAR');
   });
-  
+
   // 不渲染以下值
   it('should not render falsy values', () => {
-		render((
-			<div>
-				{null},{undefined},{false},{0},{NaN}
-			</div>
+		render(
+      (
+        <div>
+          {null},{undefined},{false},{0},{NaN}
+        </div>
 		), scratch);
 
 		expect(scratch.firstChild.innerHTML).toEqual(',,,0,NaN');
   });
-  
+
   it('should not render null', () => {
 		render(null, scratch);
 		expect(scratch.innerHTML).toEqual('');
   });
-  
+
   it('should not render undefined', () => {
 		render(undefined, scratch);
 		expect(scratch.innerHTML).toEqual('');
@@ -156,42 +160,41 @@ describe('render()', () => {
 		render('Testing, huh! How is it going?', scratch);
 		expect(scratch.innerHTML).toEqual('Testing, huh! How is it going?');
   });
-  
-  it('should clear falsy attributes', () => {
-		let root = render((
-			<div anull="anull" aundefined="aundefined" afalse="afalse" anan="aNaN" a0="a0" />
-		), scratch);
 
-		render((
-			<div anull={null} aundefined={undefined} afalse={false} anan={NaN} a0={0} />
-		), scratch, root);
+  it('should clear falsy attributes', () => {
+		const root = render(
+      (<div anull="anull" aundefined="aundefined" afalse="afalse" anan="aNaN" a0="a0" />),
+      scratch);
+
+		render(<div anull={null} aundefined={undefined} afalse={false} anan={NaN} a0={0} />
+		  , scratch, root);
 
 		expect(getAttributes(scratch.firstChild), 'from previous truthy values').toEqual({
 			a0: '0',
-			anan: 'NaN'
+			anan: 'NaN',
 		});
 	});
 
 	it('should not render falsy attributes on initial render', () => {
-		render((
-			<div anull={null} aundefined={undefined} afalse={false} anan={NaN} a0={0} />
-		), scratch);
+		render(<div anull={null} aundefined={undefined} afalse={false} anan={NaN} a0={0} />, scratch);
 
 		expect(getAttributes(scratch.firstChild), 'initial render').toEqual({
 			a0: '0',
-			anan: 'NaN'
+			anan: 'NaN',
 		});
   });
-  
+
 	it('should clear falsy DOM properties', () => {
 		let root;
 		function test(val) {
-			root = render((
-				<div>
-					<input value={val} />
-					<table border={val} />
-				</div>
-			), scratch, root);
+			root = render(
+        (
+          <div>
+            <input value={val} />
+            <table border={val} />
+          </div>
+        ),
+        scratch, root);
 		}
 
 		test('2');
@@ -206,6 +209,6 @@ describe('render()', () => {
 		test(undefined);
 		expect(scratch.innerHTML).toEqual('<div><input><table></table></div>', 'for undefined');
   });
-  
-  
+
+
 })

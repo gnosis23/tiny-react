@@ -55,7 +55,7 @@ function diffNode(dom, vnode) {
     return diffComponent(dom, vnode);
   }
 
-  // 新插入或者替换原来的 
+  // 新插入或者替换原来的
   if (!dom || !isSameNodeType(dom, vnode)) {
     out = document.createElement(vnode.tag);
 
@@ -74,8 +74,10 @@ function diffNode(dom, vnode) {
 
   // null or undefined
   if (props == null) {
-    props = out[ATTR_KEY] = {};
-    for (let a = out.attributes, i = a.length; i--; ) {
+    out[ATTR_KEY] = {}
+    props = out[ATTR_KEY];
+    const a = out.attributes;
+    for (let i = 0; i < a.length; i+=1) {
       props[a[i].name] = a[i].value;
     }
   }
@@ -101,11 +103,11 @@ function diffChildren(dom, vchildren) {
   const keyed = {};
 
   if (domChildren.length > 0) {
-    for (let i = 0; i < domChildren.length; i++) {
+    for (let i = 0; i < domChildren.length; i+=1) {
       const child = domChildren[i];
-      const key = child.key;
+      const {key} = child;
       if (key) {
-        keyedLen++;
+        // keyedLen += 1;
         keyed[key] = child;
       } else {
         children.push(child);
@@ -117,9 +119,9 @@ function diffChildren(dom, vchildren) {
     let min = 0;
     let childrenLen = children.length;
 
-    for (let i = 0; i < vchildren.length; i++) {
+    for (let i = 0; i < vchildren.length; i+=1) {
       const vchild = vchildren[i];
-      const key = vchild.key;
+      const {key} = vchild;
       let child;
 
       if (key) {
@@ -127,17 +129,17 @@ function diffChildren(dom, vchildren) {
           child = keyed[key];
           keyed[key] = undefined;
         }
-      } 
+      }
       else if (min < childrenLen) {
-        for (let j = min; j < childrenLen; j++) {
-          let c = children[j];
+        for (let j = min; j < childrenLen; j+=1) {
+          const c = children[j];
 
           if (c && isSameNodeType(c, vchild)) {
             child = c;
             children[j] = undefined;
 
-            if (j === childrenLen - 1) childrenLen--;
-            if (j === min) min++;
+            if (j === childrenLen - 1) childrenLen-=1;
+            if (j === min) min+=1;
             break;
           }
         }
@@ -161,7 +163,7 @@ function diffChildren(dom, vchildren) {
 }
 
 function diffComponent(dom, vnode) {
-
+  // eslint-disable-next-line
   let c = dom && dom._component;
   let oldDom = dom;
 
@@ -183,6 +185,7 @@ function diffComponent(dom, vnode) {
     dom = c.base;
 
     if (oldDom && dom !== oldDom) {
+      // eslint-disable-next-line
       oldDom._component = null;
       removeNode(oldDom);
     }
@@ -209,17 +212,16 @@ function setComponentProps(component, props) {
 
 export function renderComponent(component) {
 
-  let base;
-
   const renderer = component.render();
 
   if (component.base && component.componentWillUpdate) {
     component.componentWillUpdate();
   }
 
-  base = diffNode(component.base, renderer);
+  const base = diffNode(component.base, renderer);
 
   component.base = base;
+  // eslint-disable-next-line
   base._component = component;
 
   if (component.base) {
@@ -229,6 +231,7 @@ export function renderComponent(component) {
   }
 
   component.base = base;
+  // eslint-disable-next-line
   base._component = component;
 
 }
@@ -238,6 +241,7 @@ function createComponent(component, props) {
   let inst;
 
   if (component.prototype && component.prototype.render) {
+    // eslint-disable-next-line
     inst = new component(props);
   } else {
     inst = new Component(props);
@@ -265,6 +269,7 @@ function isSameNodeType(dom, vnode) {
     return dom.nodeName.toLowerCase() === vnode.tag.toLowerCase();
   }
 
+  // eslint-disable-next-line
   return dom && dom._component && dom._component.constructor === vnode.tag;
 }
 
@@ -288,9 +293,9 @@ function diffAttributes(dom, attrs, old) {
 
 	// add new & update changed attributes
 	for (name in attrs) {
-    if (name!=='children' 
-        && name!=='innerHTML' 
-        && (!(name in old) || 
+    if (name!=='children'
+        && name!=='innerHTML'
+        && (!(name in old) ||
             attrs[name]!==(name==='value' || name==='checked' ? dom[name] : old[name]))) {
       setAccessor(dom, name, old[name], attrs[name]);
       old[name] = attrs[name];

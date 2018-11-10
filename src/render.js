@@ -1,5 +1,3 @@
-import { setAttribute } from './attr';
-import { Component } from './component';
 import { diff } from './diff';
 
 /**
@@ -8,61 +6,5 @@ import { diff } from './diff';
  */
 export function render(vnode, container, dom) {
   return diff(dom, vnode, container);
-}
-
-/**
- * @param {VNode|Component} vnode
- */
-function VNodeToDom(vnode) {
-  let dom;
-  
-  if (vnode === null || vnode === undefined) {
-    return document.createTextNode('');
-  }
-  else if (typeof vnode === 'string') {
-    return document.createTextNode(vnode);
-  } 
-  else if (typeof vnode === 'number') {
-    return document.createTextNode(String(vnode));
-  }
-  else if (typeof vnode.tag === 'function') {
-    const props = Object.assign(
-      {}, 
-      vnode.attrs, 
-      { children: vnode.children }
-    );
-    const ctor = vnode.tag;
-
-    if (ctor.prototype instanceof Component) {
-      // Class style
-      const component = new ctor(props);
-      const node = component.render();
-      dom = VNodeToDom(node);
-      component._dom = dom;
-    } else {
-      // Function style
-      const node = ctor(props);
-      dom = VNodeToDom(node);
-    }
-  }
-  else {
-    dom = document.createElement(vnode.tag);
-  }
-
-
-
-  if (vnode.attrs) {
-    Object.keys(vnode.attrs).forEach(attr => {
-      setAttribute(dom, attr, vnode.attrs[attr]);
-    })
-  }
-
-  if (vnode.children) {
-    vnode.children.forEach(child => {
-      dom.appendChild(VNodeToDom(child));
-    });
-  }
-
-  return dom;
 }
 
