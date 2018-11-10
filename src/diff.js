@@ -102,6 +102,7 @@ function diffChildren(dom, vchildren) {
 
   const keyed = {};
 
+  // 归为2堆：有key的和没有的
   if (domChildren.length > 0) {
     for (let i = 0; i < domChildren.length; i+=1) {
       const child = domChildren[i];
@@ -124,6 +125,7 @@ function diffChildren(dom, vchildren) {
       const {key} = vchild;
       let child;
 
+      // 找到同一个类型的
       if (key) {
         if (keyed[key]) {
           child = keyed[key];

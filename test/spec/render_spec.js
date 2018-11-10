@@ -307,5 +307,20 @@ describe('render()', () => {
 		expect(scratch.firstChild.lastChild.nodeName).toEqual('A');
 		expect(scratch.firstChild.firstChild).toEqual(b);
 		expect(scratch.firstChild.lastChild).toEqual(a);
+  });
+
+  it('should not merge attributes with node created by the DOM', () => {
+		const html = (htmlString) => {
+			const div = document.createElement('div');
+			div.innerHTML = htmlString;
+			return div.firstChild;
+		};
+
+		const DOMElement = html`<div><a foo="bar"></a></div>`;
+		// eslint-disable-next-line jsx-a11y/anchor-has-content
+		const preactElement = <div><a /></div>;
+
+		render(preactElement, scratch, DOMElement);
+		expect(scratch.innerHTML).toEqual('<div><a></a></div>');
 	});
 })
