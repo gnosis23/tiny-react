@@ -1,34 +1,35 @@
 // Karma configuration
 // Generated on Thu Sep 28 2017 10:40:06 GMT+0800 (中国标准时间)
-var webpack = require('webpack')
-var path = require('path')
+const webpack = require('webpack')
+const path = require('path')
 
-var webpackConfig = {
+const webpackConfig = {
   mode: 'development',
   resolve: {
     alias: {
-      src: path.resolve(__dirname, '../', 'src')
-    }
+      src: path.resolve(__dirname, '../', 'src'),
+    },
   },
   module: {
     rules: [
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: /node_modules/
-      }
-    ]
+        exclude: /node_modules/,
+      },
+    ],
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: '"development"'
-      }
-    })
+        NODE_ENV: '"development"',
+      },
+    }),
   ],
-  devtool: '#inline-source-map'
+  devtool: '#inline-source-map',
 }
 
+// eslint-disable-next-line func-names
 module.exports = function(config) {
   config.set({
     // frameworks to use
@@ -39,14 +40,14 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       { pattern: './polyfills.js', watched: false },
-      { pattern: './test_index.js', watched: false },      
+      { pattern: './test_index.js', watched: false },
     ],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       './polyfills.js': ['webpack'],
-      './test_index.js': ['webpack', 'sourcemap']
+      './test_index.js': ['webpack', 'sourcemap'],
     },
 
 
@@ -67,7 +68,7 @@ module.exports = function(config) {
     webpack: webpackConfig,
 
     webpackMiddleware: {
-      noInfo: true
-    }
+      noInfo: true,
+    },
   })
 }

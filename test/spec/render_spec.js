@@ -210,5 +210,102 @@ describe('render()', () => {
 		expect(scratch.innerHTML).toEqual('<div><input><table></table></div>', 'for undefined');
   });
 
+	it('should apply string attributes', () => {
+		render(<div foo="bar" data-foo="databar" />, scratch);
 
+		const div = scratch.childNodes[0];
+		expect(div.attributes.length).toEqual(2);
+
+		expect(div.attributes[0].name).toEqual('foo');
+		expect(div.attributes[0].value).toEqual('bar');
+
+		expect(div.attributes[1].name).toEqual('data-foo');
+		expect(div.attributes[1].value).toEqual('databar');
+  });
+
+	it('should not serialize function props as attributes', () => {
+		render(<div click={function a(){}} ONCLICK={function b(){}} />, scratch);
+
+		const div = scratch.childNodes[0];
+		expect(div.attributes.length).toEqual(0);
+  });
+
+  it('should serialize object props as attributes', () => {
+		render(<div foo={{ a: 'b' }} bar={{ toString() { return 'abc'; } }} />, scratch);
+
+		const div = scratch.childNodes[0];
+		expect(div.attributes.length).toEqual(2);
+
+		expect(div.attributes[0].name).toEqual('foo');
+		expect(div.attributes[0].value).toEqual('[object Object]');
+
+		expect(div.attributes[1].name).toEqual('bar');
+		expect(div.attributes[1].value).toEqual('abc');
+  });
+
+  it('should apply class as String', () => {
+		render(<div className="foo" />, scratch);
+		expect(scratch.childNodes[0].className).toEqual('foo');
+	});
+
+	it('should alias className to class', () => {
+		render(<div className="bar" />, scratch);
+		expect(scratch.childNodes[0].className).toEqual('bar');
+  });
+
+  it('should reconcile mutated DOM attributes', () => {
+    const check = p => render(
+      <input type="checkbox" checked={p} />,
+      scratch, scratch.lastChild);
+    const value = () => scratch.lastChild.checked;
+    const setValue = p => { scratch.lastChild.checked = p };
+    check(true);
+    expect(value()).toEqual(true);
+    check(false);
+    expect(value()).toEqual(false);
+    check(true);
+		expect(value()).toEqual(true);
+		setValue(false);
+		check(true);
+		expect(value()).toEqual(true);
+		setValue(false);
+		check(true);
+		expect(value()).toEqual(true);
+  });
+
+	// it('should ignore props.children if children are manually specified', () => {
+	// 	expect(<div a children={['a', 'b']}>c</div>).toEqual(
+	// 		<div a>c</div>
+	// 	);
+  // });
+
+  it('should reorder child pairs', () => {
+		let root = render(
+      (
+        <div>
+          <a>a</a>
+          <b>b</b>
+        </div>
+      ),
+      scratch, root);
+
+		const a = scratch.firstChild.firstChild;
+		const b = scratch.firstChild.lastChild;
+
+		expect(a.nodeName).toEqual('A');
+		expect(b.nodeName).toEqual('B');
+
+		root = render(
+      (
+        <div>
+          <b>b</b>
+          <a>a</a>
+        </div>
+		  ), scratch, root);
+
+		expect(scratch.firstChild.firstChild.nodeName).toEqual('B');
+		expect(scratch.firstChild.lastChild.nodeName).toEqual('A');
+		expect(scratch.firstChild.firstChild).toEqual(b);
+		expect(scratch.firstChild.lastChild).toEqual(a);
+	});
 })

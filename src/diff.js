@@ -147,14 +147,14 @@ function diffChildren(dom, vchildren) {
 
       child = diffNode(child, vchild);
 
-      const f = domChildren[i];
-      if (child && child !== dom && child !== f) {
-        if (!f) {
+      const currentChild = domChildren[i];
+      if (child && child !== dom && child !== currentChild) {
+        if (!currentChild) {
           dom.appendChild(child);
-        } else if (child === f.nextSibling) {
-          removeNode(f);
+        } else if (child === currentChild.nextSibling) {
+          removeNode(currentChild);
         } else {
-          dom.insertBefore(child, f);
+          dom.insertBefore(child, currentChild);
         }
       }
     }
