@@ -1,0 +1,1 @@
+export const ATTR_KEY = '__bhattr_';

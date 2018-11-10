@@ -1,7 +1,8 @@
 // https://github.com/hujiulong/simple-react/blob/chapter-3/src/react-dom/diff.js
 import { Component } from './component';
-import { setAttribute } from './attr';
+import { setAccessor } from './attr';
 import { isFalsy } from './util';
+import { ATTR_KEY } from './constants';
 
 /**
  * @param {HTMLElement} dom 真实DOM
@@ -69,6 +70,16 @@ function diffNode(dom, vnode) {
     }
   }
 
+  let props = out[ATTR_KEY];
+
+  // null or undefined
+  if (props == null) {
+    props = out[ATTR_KEY] = {};
+    for (let a = out.attributes, i = a.length; i--; ) {
+      props[a[i].name] = a[i].value;
+    }
+  }
+
   // remove falsy
   if (vnode.children) {
     vnode.children = vnode.children.filter(x => !isFalsy(x));
@@ -78,7 +89,7 @@ function diffNode(dom, vnode) {
     diffChildren(out, vnode.children);
   }
 
-  diffAttributes(out, vnode);
+  diffAttributes(out, vnode.attrs, props);
 
   return out;
 }
@@ -257,32 +268,34 @@ function isSameNodeType(dom, vnode) {
   return dom && dom._component && dom._component.constructor === vnode.tag;
 }
 
-function diffAttributes(dom, vnode) {
+/**
+ * Apply differences in attributes from a VNode to the given DOM Element.
+ * @param {*} dom Element with attributes to diff `attrs` against
+ * @param {object} attrs The desired end-state key-value attribute pairs
+ * @param {object} old Current/previous attributes (from previous VNode or
+ *  element's prop cache)
+ */
+function diffAttributes(dom, attrs, old) {
+  let name;
 
-  const old = {};    // 当前DOM的属性
-  const attrs = vnode.attrs;     // 虚拟DOM的属性
+	// remove attributes no longer present on the vnode by setting them to undefined
+	for (name in old) {
+		if (!(attrs && attrs[name] != null) && old[name] != null) {
+      setAccessor(dom, name, old[name], undefined);
+      old[name] = undefined;
+		}
+	}
 
-  for (let i = 0; i < dom.attributes.length; i++) {
-    const attr = dom.attributes[i];
-    old[attr.name] = attr.value;
-  }
-
-  // 如果原来的属性不在新的属性当中或者值为falsy，则将其移除掉（属性值设为undefined）
-  for (let name in old) {
-    if (!(name in attrs)) {
-      setAttribute(dom, name, undefined);
-    }
-  }
-
-  // 更新新的属性值
-  for (let name in attrs) {
-    if (isFalsy(attrs[name])) {
-      setAttribute(dom, name, undefined);
-    }
-    else if (old[name] !== attrs[name]) {
-      setAttribute(dom, name, attrs[name]);
-    }
-  }
+	// add new & update changed attributes
+	for (name in attrs) {
+    if (name!=='children' 
+        && name!=='innerHTML' 
+        && (!(name in old) || 
+            attrs[name]!==(name==='value' || name==='checked' ? dom[name] : old[name]))) {
+      setAccessor(dom, name, old[name], attrs[name]);
+      old[name] = attrs[name];
+		}
+	}
 
 }
 
