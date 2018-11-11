@@ -1,8 +1,8 @@
 // https://github.com/hujiulong/simple-react/blob/chapter-3/src/react-dom/diff.js
-import { Component } from './component';
-import { setAccessor } from './attr';
-import { isFalsy } from './util';
-import { ATTR_KEY } from './constants';
+import { Component } from '../component';
+import { setAccessor } from '../attr';
+import { isFalsy } from '../util';
+import { ATTR_KEY } from '../constants';
 
 /**
  * @param {HTMLElement} dom 真实DOM

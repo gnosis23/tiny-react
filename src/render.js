@@ -1,4 +1,4 @@
-import { diff } from './diff';
+import { diff } from './vdom/diff';
 
 /**
  * @param {VNode | string} vnode

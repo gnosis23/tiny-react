@@ -1,4 +1,4 @@
-import { renderComponent } from './diff';
+import { renderComponent } from './vdom/diff';
 
 export class Component {
   constructor(props) {
