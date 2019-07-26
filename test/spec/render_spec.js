@@ -1,4 +1,3 @@
-/* eslint-disable react-in-jsx-scope */
 import { render } from '../../src/render';
 // eslint-disable-next-line
 import { h } from '../../src/vnode';

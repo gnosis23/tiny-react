@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "parcel ./index.html",
     "test": "karma start test/karma.config.js"
   },
   "repository": {
@@ -33,7 +32,6 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-markdown": "^1.0.0-beta.6",
     "eslint-plugin-react": "^7.0.1",
-    "parcel-bundler": "^1.7.1",
     "jasmine": "^2.99.0",
     "jasmine-core": "^2.99.0",
     "karma": "^3.1.1",
